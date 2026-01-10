@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Units Demo</title>
+
+  <style>
+    /* rem is based on html font-size */
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* vh & vw */
+    .viewport-box {
+      width: 50vw;  
+      height: 30vh;    
+      background: lightblue;
+      padding: 1rem;
+      margin: 1rem;
+    }
+
+    /* rem */
+    .rem-text {
+      font-size: 2rem;  
+    }
+
+    /* em */
+    .em-container {
+      font-size: 20px;
+      margin: 1rem;
+    }
+
+    .em-text {
+      font-size: 1.5em; 
+    }
+
+    /* % */
+    .percent-parent {
+      width: 400px;
+      background: #eee;
+      padding: 10px;
+      margin: 1rem;
+    }
+
+    .percent-child {
+      width: 50%;      
+      background: coral;
+      color: white;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport-box">
+    <p class="rem-text">This text uses <strong>rem</strong></p>
+  </div>
+
+  <div class="em-container">
+    <p class="em-text">This text uses <strong>em</strong></p>
+  </div>
+
+  <div class="percent-parent">
+    Parent (400px wide)
+    <div class="percent-child">
+      Child uses <strong>%</strong>
+    </div>
+  </div>
+
+</body>
+</html>
