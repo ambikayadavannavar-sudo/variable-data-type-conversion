@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All Over System Management</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+    font-family: Arial;
+    background:white;
+}
+body{
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    width:350px;
+    background:gray;
+    padding:20px;
+    margin:20px auto;
+    border-radius:5px;
+    box-shadow:0 0 10px black;
+}
+input,select,button{
+    width:100%;
+    padding:8px;
+    margin:5px 0;
+}
+.section{
+    border:1px solid #ccc;
+    padding:10px;
+    margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= ADMIN LOGIN ================= -->
+<div class="container" id="adminLoginBox">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Admin Username">
+    <input type="password" id="adminPass" placeholder="Admin Password">
+
+    <button type="button" onclick="login()">Admin Login</button><br><br>
+
+    <button type="button" onclick="hideAll(); roleLoginBox.style.display='block'; role.value='student'">
+        Student
+    </button>
+
+    <button type="button" onclick="hideAll(); roleLoginBox.style.display='block'; role.value='staff'">
+        Staff
+    </button>
+
+    <p id="adminMsg" style="color:red;"></p>
+</div>
+
+<!-- ================= STUDENT / STAFF LOGIN ================= -->
+<div class="container" id="roleLoginBox" style="display:none;">
+    <h2>Student / Staff Login</h2>
+
+    <select id="role">
+        <option value="student">Student</option>
+        <option value="staff">Staff</option>
+    </select>
+
+    <input type="text" id="loginId" placeholder="User ID">
+    <input type="password" id="loginPass" placeholder="Password">
+
+    <button type="button" onclick="roleLogin()">Login</button>
+    <p id="roleMsg" style="color:red;"></p>
+</div>
+<div class="section">
+    <h2>Student Management</h2>
+
+    <div class="student">
+        <form id="studentForm">
+            <input type="text" id="st_id" placeholder="Student ID" required><br>
+            <input type="text" id="st_name" placeholder="Student Name" required><br>
+            <input type="text" id="st_course" placeholder="Course" required><br>
+            <input type="number" id="st_marks" placeholder="Marks" required><br>
+            <input type="password" id="st_pass" placeholder="Student Password" required><br>
+            <button type="submit">Add Student</button>
+        </form>
+    </div>
+
+    <div id="studentOutput">No students added yet.</div>
+
+    <h3>Search Student</h3>
+    <input type="text" id="searchSID" placeholder="Student ID"><br>
+    <input type="text" id="searchName" placeholder="Student Name"><br>
+    <button type="button" onclick="searchStudent()">Search</button>
+
+    <div id="studentResult"></div>
+
+    <!-- Logout Button -->
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+    let students = [];
+
+    // Add student
+    document.getElementById('studentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const id = st_id.value.trim();
+        const name = st_name.value.trim();
+        const course = st_course.value.trim();
+        const marks = parseFloat(st_marks.value);
+        const password = st_pass.value;
+
+        if (students.some(student => student.id === id)) {
+            alert('Student ID already exists!');
+            return;
+        }
+
+        students.push({ id, name, course, marks, password });
+        displayStudents();
+        this.reset();
+    });
+
+    // Display students
+    function displayStudents() {
+        const output = document.getElementById('studentOutput');
+        output.innerHTML = '';
+
+        if (students.length === 0) {
+            output.innerHTML = 'No students added yet.';
+            return;
+        }
+
+        students.forEach(student => {
+            const div = document.createElement('div');
+            div.className = 'student-card';
+            div.innerHTML = `
+                <strong>ID:</strong> ${student.id}<br>
+                <strong>Name:</strong> ${student.name}<br>
+                <strong>Course:</strong> ${student.course}<br>
+                <strong>Marks:</strong> ${student.marks}
+            `;
+            output.appendChild(div);
+        });
+    }
+
+    // Search student
+    function searchStudent() {
+        const searchID = searchSID.value.trim().toLowerCase();
+        const searchName = searchNameInput = searchName.value.trim().toLowerCase();
+        const resultDiv = document.getElementById('studentResult');
+
+        const filtered = students.filter(student =>
+            (searchID && student.id.toLowerCase() === searchID) ||
+            (searchName && student.name.toLowerCase().includes(searchName))
+        );
+
+        resultDiv.innerHTML = '';
+
+        if (filtered.length === 0) {
+            resultDiv.innerHTML = 'No matching students found.';
+            return;
+        }
+
+        filtered.forEach(student => {
+            const div = document.createElement('div');
+            div.className = 'student-card';
+            div.innerHTML = `
+                <strong>ID:</strong> ${student.id}<br>
+                <strong>Name:</strong> ${student.name}<br>
+                <strong>Course:</strong> ${student.course}<br>
+                <strong>Marks:</strong> ${student.marks}
+            `;
+            resultDiv.appendChild(div);
+        });
+    }
+
+    // Logout system
+    function logout() {
+        students = [];
+        alert('Logged out successfully');
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
+
+
+<!-- ================= ADMIN SYSTEM ================= -->
+<div class="container" id="mainSystem" style="display:none;">
+    <button onclick="logout()" style="float:right;">Logout</button>
+    <h1>All Over System Management</h1>
+
+    <!-- STUDENT MANAGEMENT -->
+    <div class="section">
+        <h2>Student Management</h2>
+
+        <form onsubmit="addStudent(event)">
+            <input type="text" id="st_id" placeholder="Student ID">
+            <input type="text" id="st_name" placeholder="Student Name">
+            <input type="text" id="st_course" placeholder="Course">
+            <input type="number" id="st_marks" placeholder="Marks">
+            <input type="password" id="st_pass" placeholder="Student Password">
+            <button type="submit">Add Student</button>
+        </form>
+
+        <div id="studentOutput">No students added yet.</div>
+
+        <h3>Search Student</h3>
+        <input type="text" id="searchSID" placeholder="Student ID">
+        <input type="text" id="searchName" placeholder="Student Name">
+        <button onclick="searchStudent()">Search</button>
+        <div id="studentResult"></div>
+    </div>
+
+    <!-- STAFF MANAGEMENT -->
+    <div class="section">
+        <h2>Staff Management</h2>
+
+        <input type="text" id="sid" placeholder="Staff ID">
+        <input type="text" id="sname" placeholder="Staff Name">
+        <input type="text" id="sdept" placeholder="Department">
+        <input type="number" id="ssalary" placeholder="Salary">
+        <input type="text" id="sphone" placeholder="Phone">
+        <input type="password" id="spass" placeholder="Staff Password">
+        <button onclick="addStaff()">Add Staff</button>
+
+        <h3>Search Staff</h3>
+        <input type="text" id="searchStaffID" placeholder="Staff ID">
+        <button onclick="searchStaff()">Search</button>
+
+        <div id="staffOutput">No staff added yet.</div>
+        <div id="staffResult"></div>
+    </div>
+</div>
+
+
+
+<script>
+/* ================= ADMIN LOGIN ================= */
+const ADMIN_USER = "KSAWU";
+const ADMIN_PASS = "KSAWU@123";
+
+/* ===== SINGLE STUDENT & STAFF LOGIN ===== */
+const STUDENT_ID = "student";
+const STUDENT_PASS = "student123";
+
+const STAFF_ID = "staff";
+const STAFF_PASS = "staff123";
+
+let studentList = [];
+let staffList = [];
+
+function login() {
+    if (adminUser.value === ADMIN_USER && adminPass.value === ADMIN_PASS) {
+        hideAll();
+        mainSystem.style.display = "block";
+        adminMsg.innerHTML = "";
+    } else {
+        adminMsg.innerHTML = "Invalid Admin Username or Password";
+    }
+}
+
+/* ================= ROLE LOGIN ================= */
+function roleLogin() {
+    const r = role.value;
+    const user = loginId.value.trim();
+    const pass = loginPass.value.trim();
+
+    hideAll();
+
+    if (r === "student") {
+        if (user === STUDENT_ID && pass === STUDENT_PASS) {
+            studentPanel.style.display = "block";
+            studentInfo.innerHTML = `
+                <b>Welcome Student</b><br>
+                ID: ${STUDENT_ID}
+            `;
+            return;
+        }
+    } 
+    else if (r === "staff") {
+        if (user === STAFF_ID && pass === STAFF_PASS) {
+            staffPanel.style.display = "block";
+            staffInfo.innerHTML = `
+                <b>Welcome Staff</b><br>
+                ID: ${STAFF_ID}
+            `;
+            return;
+        }
+    }
+
+    roleLoginBox.style.display = "block";
+    roleMsg.innerHTML = "Invalid Student / Staff Login";
+}
+
+/* ================= LOGOUT ================= */
+function logout() {
+    hideAll();
+    adminLoginBox.style.display = "block";
+}
+
+/* ================= HIDE ALL ================= */
+function hideAll() {
+    adminLoginBox.style.display = "none";
+    roleLoginBox.style.display = "none";
+    mainSystem.style.display = "none";
+    studentPanel.style.display = "none";
+    staffPanel.style.display = "none";
+}
+
+/* ================= STUDENT FUNCTIONS ================= */
+function addStudent(e) {
+    e.preventDefault();
+    studentList.push({
+        id: st_id.value,
+        name: st_name.value,
+        course: st_course.value,
+        marks: st_marks.value,
+        pass: st_pass.value
+    });
+    displayStudents();
+}
+
+function displayStudents() {
+    studentOutput.innerHTML =
+        studentList.length === 0
+            ? "No students added yet."
+            : studentList.map((s,i)=>`${i+1}. ${s.id} - ${s.name}`).join("<br>");
+}
+
+function searchStudent() {
+    const found = studentList.find(
+        s => s.id === searchSID.value || s.name === searchName.value
+    );
+    studentResult.innerHTML = found
+        ? `ID: ${found.id}<br>Name: ${found.name}<br>Course: ${found.course}<br>Marks: ${found.marks}`
+        : "Student Not Found";
+}
+
+/* ================= STAFF FUNCTIONS ================= */
+function addStaff() {
+    staffList.push({
+        id: sid.value,
+        name: sname.value,
+        dept: sdept.value,
+        salary: ssalary.value,
+        phone: sphone.value,
+        pass: spass.value
+    });
+    displayStaff();
+}
+
+function displayStaff() {
+    staffOutput.innerHTML =
+        staffList.length === 0
+            ? "No staff added yet."
+            : staffList.map((e,i)=>`${i+1}. ${e.id} - ${e.name}`).join("<br>");
+}
+
+function searchStaff() {
+    const found = staffList.find(e => e.id === searchStaffID.value);
+    staffResult.innerHTML = found
+        ? `ID: ${found.id}<br>Name: ${found.name}<br>Dept: ${found.dept}`
+        : "Staff Not Found";
+}
+</script>
+
+</body>
+</html>
